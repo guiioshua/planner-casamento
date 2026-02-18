@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: planner_casamento_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: planner_casamento
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - planner_casamento_pgdata:/var/lib/postgresql/data
+
+volumes:
+  planner_casamento_pgdata:
+    driver: local
+
