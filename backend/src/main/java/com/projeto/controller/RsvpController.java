@@ -1,0 +1,27 @@
+package com.projeto.controller;
+
+import com.projeto.dto.InvitationResponse;
+import com.projeto.dto.RsvpUpdateRequest;
+import com.projeto.service.InvitationService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/rsvp")
+@RequiredArgsConstructor
+public class RsvpController {
+
+    private final InvitationService invitationService;
+
+    @GetMapping("/{slug}")
+    public InvitationResponse getInvitationForRsvp(@PathVariable String slug) {
+        return invitationService.getBySlug(slug);
+    }
+
+    @PostMapping("/{slug}/confirm")
+    public InvitationResponse confirmRsvp(@PathVariable String slug, @Valid @RequestBody RsvpUpdateRequest request) {
+        return invitationService.updateGuestStatuses(slug, request);
+    }
+}
+
