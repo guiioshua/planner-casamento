@@ -37,6 +37,7 @@ public class InvitationController {
         if (coverImage != null && !coverImage.isEmpty()) {
             imageUrl = storageService.store(coverImage);
         }
+        
         return invitationService.createInvitation(request, imageUrl);
     }
 
@@ -50,6 +51,7 @@ public class InvitationController {
         if (coverImage != null && !coverImage.isEmpty()) {
             imageUrl = storageService.store(coverImage);
         }
+
         return invitationService.updateInvitation(id, request, imageUrl);
     }
 

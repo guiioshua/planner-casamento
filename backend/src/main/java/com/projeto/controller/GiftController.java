@@ -19,7 +19,6 @@ public class GiftController {
 
     private final GiftService giftService;
 
-    /** Admin: todos os presentes */
     @GetMapping
     public List<GiftResponse> listAll() {
         return giftService.findAll();

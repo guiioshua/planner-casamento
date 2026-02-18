@@ -40,8 +40,9 @@ public class GiftService {
                 .name(request.getName())
                 .purchaseLink(request.getPurchaseLink())
                 .imageUrl(request.getImageUrl())
+                // Use getVisible() because the DTO field is a 'Boolean' wrapper
+                .visible(request.getVisible())
                 .status(request.getStatus() != null ? request.getStatus() : GiftStatus.AVAILABLE)
-                .visible(request.isVisible())
                 .build();
         return toResponse(giftRepository.save(gift));
     }
@@ -50,11 +51,15 @@ public class GiftService {
     public GiftResponse update(UUID id, GiftRequest request) {
         Gift gift = giftRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Gift not found: " + id));
+
         gift.setName(request.getName());
         gift.setPurchaseLink(request.getPurchaseLink());
         gift.setImageUrl(request.getImageUrl());
         gift.setStatus(request.getStatus());
-        gift.setVisible(request.isVisible());
+
+        // Use getVisible() here too
+        gift.setVisible(request.getVisible());
+
         return toResponse(giftRepository.save(gift));
     }
 
@@ -84,6 +89,8 @@ public class GiftService {
                 .purchaseLink(gift.getPurchaseLink())
                 .imageUrl(gift.getImageUrl())
                 .status(gift.getStatus())
+                // Verify if your Gift Model uses Boolean (getVisible) or boolean (isVisible)
+                // Assuming Boolean to match DTO:
                 .visible(gift.isVisible())
                 .build();
     }

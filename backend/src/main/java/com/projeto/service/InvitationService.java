@@ -31,11 +31,16 @@ public class InvitationService {
     }
 
     @Transactional
-    public InvitationResponse createInvitation(CreateInvitationRequest request) {
+    public InvitationResponse createInvitation(CreateInvitationRequest request, String uploadedImageUrl) {
+        String finalImageUrl = uploadedImageUrl;
+        if (finalImageUrl == null && request.getCoverImageUrl() != null) {
+            finalImageUrl = request.getCoverImageUrl();
+        }
+
         Invitation invitation = Invitation.builder()
                 .familyName(request.getFamilyName())
                 .type(request.getType())
-                .coverImageUrl(request.getCoverImageUrl())
+                .coverImageUrl(finalImageUrl) // Uses the determined URL
                 .messageBody(request.getMessageBody())
                 .build();
 
@@ -57,16 +62,20 @@ public class InvitationService {
     }
 
     @Transactional
-    public InvitationResponse updateInvitation(UUID id, CreateInvitationRequest request) {
+    public InvitationResponse updateInvitation(UUID id, CreateInvitationRequest request, String uploadedImageUrl) {
         Invitation invitation = invitationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Invitation not found: " + id));
 
         invitation.setFamilyName(request.getFamilyName());
         invitation.setType(request.getType());
-        invitation.setCoverImageUrl(request.getCoverImageUrl());
         invitation.setMessageBody(request.getMessageBody());
 
-        // Replace guests collection to reflect current request
+        if (uploadedImageUrl != null) {
+            invitation.setCoverImageUrl(uploadedImageUrl);
+        } else if (request.getCoverImageUrl() != null && !request.getCoverImageUrl().isBlank()) {
+            invitation.setCoverImageUrl(request.getCoverImageUrl());
+        }
+
         invitation.getGuests().clear();
         if (request.getGuests() != null) {
             for (CreateGuestRequest guestRequest : request.getGuests()) {

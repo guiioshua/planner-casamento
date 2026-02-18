@@ -18,7 +18,8 @@ public class GiftRequest {
     String imageUrl;
 
     @NotNull
-    GiftStatus status;
+    Boolean visible;
 
-    boolean visible;
+    @NotNull
+    GiftStatus status;
 }
