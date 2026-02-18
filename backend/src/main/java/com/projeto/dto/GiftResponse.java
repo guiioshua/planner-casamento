@@ -1,5 +1,6 @@
 package com.projeto.dto;
 
+import com.projeto.model.GiftStatus;
 import lombok.Builder;
 import lombok.Value;
 
@@ -13,6 +14,6 @@ public class GiftResponse {
     String name;
     String purchaseLink;
     String imageUrl;
-    boolean active;
+    GiftStatus status;
+    boolean visible;
 }
-

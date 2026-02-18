@@ -19,11 +19,8 @@ public class CreateInvitationRequest {
     @NotNull
     InvitationType type;
 
-    String coverImageUrl;
-
     String messageBody;
 
     @Valid
     List<CreateGuestRequest> guests;
 }
-

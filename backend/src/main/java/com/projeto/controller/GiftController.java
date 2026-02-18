@@ -1,3 +1,4 @@
+
 package com.projeto.controller;
 
 import com.projeto.dto.GiftRequest;
@@ -18,14 +19,15 @@ public class GiftController {
 
     private final GiftService giftService;
 
+    /** Admin: todos os presentes */
     @GetMapping
     public List<GiftResponse> listAll() {
         return giftService.findAll();
     }
 
-    @GetMapping("/active")
-    public List<GiftResponse> listActive() {
-        return giftService.findActive();
+    @GetMapping("/visible")
+    public List<GiftResponse> listVisible() {
+        return giftService.findVisible();
     }
 
     @PostMapping
@@ -39,10 +41,14 @@ public class GiftController {
         return giftService.update(id, request);
     }
 
+    @PatchMapping("/{id}/choose")
+    public GiftResponse choose(@PathVariable UUID id) {
+        return giftService.choose(id);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         giftService.delete(id);
     }
 }
-

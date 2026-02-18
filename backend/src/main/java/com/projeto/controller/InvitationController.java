@@ -3,10 +3,13 @@ package com.projeto.controller;
 import com.projeto.dto.CreateInvitationRequest;
 import com.projeto.dto.InvitationResponse;
 import com.projeto.service.InvitationService;
+import com.projeto.service.StorageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,21 +20,37 @@ import java.util.UUID;
 public class InvitationController {
 
     private final InvitationService invitationService;
+    private final StorageService storageService;
 
     @GetMapping
     public List<InvitationResponse> listAll() {
         return invitationService.findAll();
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public InvitationResponse create(@Valid @RequestBody CreateInvitationRequest request) {
-        return invitationService.createInvitation(request);
+    public InvitationResponse create(
+            @Valid @RequestPart("data") CreateInvitationRequest request,
+            @RequestPart(value = "coverImage", required = false) MultipartFile coverImage) {
+
+        String imageUrl = null;
+        if (coverImage != null && !coverImage.isEmpty()) {
+            imageUrl = storageService.store(coverImage);
+        }
+        return invitationService.createInvitation(request, imageUrl);
     }
 
-    @PutMapping("/{id}")
-    public InvitationResponse update(@PathVariable UUID id, @Valid @RequestBody CreateInvitationRequest request) {
-        return invitationService.updateInvitation(id, request);
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public InvitationResponse update(
+            @PathVariable UUID id,
+            @Valid @RequestPart("data") CreateInvitationRequest request,
+            @RequestPart(value = "coverImage", required = false) MultipartFile coverImage) {
+
+        String imageUrl = null;
+        if (coverImage != null && !coverImage.isEmpty()) {
+            imageUrl = storageService.store(coverImage);
+        }
+        return invitationService.updateInvitation(id, request, imageUrl);
     }
 
     @DeleteMapping("/{id}")
@@ -45,4 +64,3 @@ public class InvitationController {
         return invitationService.getBySlug(slug);
     }
 }
-

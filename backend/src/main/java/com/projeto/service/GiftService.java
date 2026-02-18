@@ -3,6 +3,7 @@ package com.projeto.service;
 import com.projeto.dto.GiftRequest;
 import com.projeto.dto.GiftResponse;
 import com.projeto.model.Gift;
+import com.projeto.model.GiftStatus;
 import com.projeto.repository.GiftRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,8 @@ public class GiftService {
     }
 
     @Transactional(readOnly = true)
-    public List<GiftResponse> findActive() {
-        return giftRepository.findByActiveTrue().stream()
+    public List<GiftResponse> findVisible() {
+        return giftRepository.findByVisibleTrue().stream()
                 .map(this::toResponse)
                 .toList();
     }
@@ -39,7 +40,8 @@ public class GiftService {
                 .name(request.getName())
                 .purchaseLink(request.getPurchaseLink())
                 .imageUrl(request.getImageUrl())
-                .active(request.isActive())
+                .status(request.getStatus() != null ? request.getStatus() : GiftStatus.AVAILABLE)
+                .visible(request.isVisible())
                 .build();
         return toResponse(giftRepository.save(gift));
     }
@@ -51,7 +53,19 @@ public class GiftService {
         gift.setName(request.getName());
         gift.setPurchaseLink(request.getPurchaseLink());
         gift.setImageUrl(request.getImageUrl());
-        gift.setActive(request.isActive());
+        gift.setStatus(request.getStatus());
+        gift.setVisible(request.isVisible());
+        return toResponse(giftRepository.save(gift));
+    }
+
+    @Transactional
+    public GiftResponse choose(UUID id) {
+        Gift gift = giftRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Gift not found: " + id));
+        if (gift.getStatus() == GiftStatus.CHOSEN) {
+            throw new IllegalStateException("Gift already chosen: " + id);
+        }
+        gift.setStatus(GiftStatus.CHOSEN);
         return toResponse(giftRepository.save(gift));
     }
 
@@ -69,8 +83,8 @@ public class GiftService {
                 .name(gift.getName())
                 .purchaseLink(gift.getPurchaseLink())
                 .imageUrl(gift.getImageUrl())
-                .active(gift.isActive())
+                .status(gift.getStatus())
+                .visible(gift.isVisible())
                 .build();
     }
 }
-

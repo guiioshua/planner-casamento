@@ -1,14 +1,7 @@
 package com.projeto.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -34,7 +27,10 @@ public class Gift {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "is_active", nullable = false)
-    private boolean active;
-}
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private GiftStatus status;
 
+    @Column(name = "is_visible", nullable = false)
+    private boolean visible;
+}
