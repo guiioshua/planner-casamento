@@ -1,0 +1,39 @@
+# Project Core: Java Spring & React Monorepo (DDD-Lite)
+
+# Directory Structure
+- Backend: `/backend` (Spring Boot, Java 17, Maven)
+- Frontend: `/frontend` (React/Vite - Lovable export)
+- Documentation: `/docs` (PRD.md, API-spec.md)
+
+# Backend Standards (DDD-Lite Layered Architecture)
+- Patterns: Follow Domain-Driven Design principles without extreme Hexagonal overhead.
+- Layers:
+  1. Web/Controller: Uses DTOs for Request/Response mapping. No business logic.
+  2. Service: Where business rules and ubiquitous language live. Orchestrates domain objects.
+  3. Repository: Spring Data JPA interfaces.
+  4. Model/Entity: Rich Domain Entities (JPA). Avoid 'Anemic Domain Models'.
+- Aggregate Roots: 'Invitation' is the root for 'Guests'. All guest-related logic must pass through InvitationService.
+- Database: PostgreSQL. Versioning via Flyway Migrations (`src/main/resources/db/migration`).
+- Validation: Strict use of JSR-303 (@Valid, @NotNull) in DTOs.
+- Containerization: Multi-stage Dockerfile in `/backend`.
+
+# DTO vs Entity Policy
+- Use DTOs for all API entry and exit points (Requests/Responses).
+- Services should handle Entities internally and map to/from DTOs at the boundary.
+- Avoid redundant internal DTOs unless the domain logic strictly requires it.
+
+# Auth Strategy (MVP to Prod)
+- MVP Phase: NO Spring Security starter yet.
+- Pattern: 'Auth Context Placeholder'.
+- Implementation: Use `CurrentUserService` to return a static User (ID: 1).
+- Future-Proofing: Services must call `currentUserService.getCurrentUser()` instead of hardcoding IDs.
+
+# Frontend Standards (React)
+- Task: The frontend may be not perfectly synced with the requirements on th PRD. Adjust them if necessary
+- Task: Refactor Lovable mock data to use TanStack Query (React Query).
+- API Client: Centralized Axios/Fetch instance pointing to `http://localhost:8080/api/v1`.
+- Styling: Tailwind CSS. Match the 'Classical/Elegant' design spec (Playfair Display, Ivory/Charcoal).
+
+# Integration & Scope
+- Scope: Always refer to `/docs/PRD.md` for functional logic and business terms.
+- Consistency: If a request contradicts the PRD or DDD-Lite layers, warn the user before coding.
