@@ -1,0 +1,40 @@
+# Root / general
+.DS_Store
+Thumbs.db
+*.log
+logs/
+
+# IDE / editor
+.idea/
+.vscode/
+*.iml
+
+# OS / tooling
+*.swp
+*.swo
+
+# Maven / Java (backend)
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# Docker
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Cursor / editor-specific project state
+.cursor/
+.cursor-build/
+
