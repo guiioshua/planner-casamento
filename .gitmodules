@@ -1,3 +1,4 @@
 [submodule "planner-frontend"]
 	path = planner-frontend
 	url = https://github.com/guiioshua/planner-frontend.git
+	branch = main
