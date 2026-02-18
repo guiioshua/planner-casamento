@@ -5,10 +5,8 @@ services:
     image: postgres:16
     container_name: planner_casamento_postgres
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: planner_casamento
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     volumes:
