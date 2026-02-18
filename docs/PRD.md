@@ -6,7 +6,7 @@ O objetivo deste projeto é desenvolver uma aplicação web simples e efetiva pa
 ## 2. Escopo do Produto
 O sistema operará em dois contextos distintos:
 1.  **Visão Administrativa (Noivos):** Gerenciamento de convites, padrinhos, presentes e financeiro.
-2.  **Visão Pública (Convidados):** Interface de RSVP e visualização da lista de presentes, acessível via link único (hash).
+2.  **Visão Pública (Convidados):** Interface de RSVP e visualização/interação com a lista de presentes, acessível via link único (hash).
 
 ## 3. Requisitos Funcionais (RF)
 
@@ -29,7 +29,7 @@ O sistema operará em dois contextos distintos:
 * Ao salvar, o status no banco de dados é atualizado automaticamente.
 
 **RF-04: Customização Visual do Convite**
-* O admin deve poder fazer upload de uma imagem de capa para o convite.
+* O admin deve poder fornecer uma imagem de capa para o convite via **upload de arquivo** ou **colagem direta (Ctrl+V)** na área designada. Campo de URL de imagem não deve ser exposto ao usuário.
 * O admin deve poder escrever um texto personalizado que aparecerá na tela de RSVP.
 * Diferenciação: Deve haver uma configuração visual ou fluxo separado para "Padrinhos" (imagem e texto distintos dos convites comuns).
 
@@ -44,12 +44,16 @@ O sistema operará em dois contextos distintos:
 ### 3.3. Módulo de Lista de Presentes
 **RF-07: Cadastro de Presentes**
 * O admin adiciona itens à lista de desejos.
-* **Campos:** Nome do Presente, Link de Compra (URL externa), Imagem do Presente (URL ou Upload).
-* *Requisito Técnico:* O sistema deve tentar extrair a "Open Graph Image" da URL fornecida para preencher a foto automaticamente. Caso falhe, permite upload manual.
+* **Campos:** Nome do Presente, Link de Compra (URL externa).
+* *Imagem do Presente:* Ao informar o Link de Compra, o sistema deve **automaticamente** tentar extrair a imagem via Open Graph da URL fornecida. Somente se a extração falhar ou não houver resultado, o admin pode realizar **upload manual** de uma imagem como alternativa. Campo de URL de imagem não deve ser exposto ao usuário.
+* O admin pode **desabilitar** um presente (ocultá-lo da lista pública) ou **excluí-lo permanentemente**. Ambas as ações devem estar disponíveis.
+* Cada presente possui um **status de disponibilidade**: `Livre` (disponível para escolha) ou `Escolhido` (reservado por um convidado).
 
-**RF-08: Visualização pelo Convidado**
+**RF-08: Visualização e Interação pelo Convidado**
 * Após o convidado confirmar presença (Status = `Confirmado`) na tela de RSVP, o sistema deve exibir um botão ou seção "Ver Lista de Presentes".
 * Se o convidado acessar o link do convite novamente e já estiver confirmado, a lista deve estar visível imediatamente.
+* Na lista de presentes, cada item exibe seu status: **Livre** ou **Escolhido**.
+* O convidado pode **marcar um presente como "Escolhido"**, sinalizando sua intenção de presentear com aquele item. Após marcado, o presente passa a aparecer como indisponível para os demais convidados.
 
 ### 3.4. Módulo Financeiro (CRM de Fornecedores)
 **RF-09: Gestão de Prestadores de Serviço**
@@ -57,7 +61,7 @@ O sistema operará em dois contextos distintos:
 * **Campos:** Nome da Empresa, Tipo de Serviço (ex: Buffet, Foto, Som), Nome do Contato, Telefone/WhatsApp, Valor Total, Valor Pago (opcional para cálculo de saldo), Notas/Observações.
 
 **RF-10: Totais Financeiros**
-* Definição/edição de Total Orçado
+* Definição/edição de Total Orçado.
 * Exibição simples do somatório dos valores dos serviços cadastrados para controle orçamentário.
 
 ## 4. Estrutura de Dados (Sugestão de Schema)
@@ -69,7 +73,7 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 * `family_name`: String (ex: "Família Souza")
 * `type`: Enum (`standard`, `godparent`)
 * `slug`: String (Unique Index - usado na URL)
-* `cover_image_url`: String
+* `cover_image_url`: String (referência interna ao arquivo armazenado — não exposta como campo de texto ao usuário)
 * `message_body`: Text
 * `created_at`: DateTime
 
@@ -84,8 +88,9 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 * `id`: UUID (Primary Key)
 * `name`: String
 * `purchase_link`: String
-* `image_url`: String
-* `is_active`: Boolean
+* `image_url`: String (preenchida via Open Graph ou upload manual — não exposta como campo de texto ao usuário)
+* `status`: Enum (`available`, `chosen`) — **substitui o campo `is_active` booleano**
+* `is_visible`: Boolean (controla se o presente aparece na lista pública; substitui o uso de `is_active` para visibilidade)
 
 ### Tabela: `vendors`
 * `id`: UUID (Primary Key)
@@ -94,15 +99,16 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 * `contact_name`: String
 * `contact_phone`: String
 * `price`: Decimal
+* `amount_paid`: Decimal (opcional)
 * `notes`: Text
 
 ## 5. Requisitos Não Funcionais e Técnicos
 
 1.  **Arquitetura:** Frontend e Backend desacoplados ou Monolito modular (ex: Next.js com Server Actions ou Laravel).
 2.  **Persistência:** Banco de dados relacional (PostgreSQL ou SQLite para MVP local).
-3.  **Upload de Imagens:** Para o MVP, as imagens podem ser armazenadas em base64 (se pequenas) ou em um bucket de armazenamento simples (AWS S3 / Supabase Storage).
+3.  **Upload de Imagens:** As imagens de capa dos convites são fornecidas exclusivamente via upload de arquivo ou colagem (Ctrl+V). Para o MVP, podem ser armazenadas em um bucket de armazenamento simples (AWS S3 / Supabase Storage) ou em base64 se pequenas.
 4.  **Interface:** Design responsivo (Mobile First), pois os convidados acessarão o RSVP via celular.
-5.  **Scraping de Imagem:** Utilizar biblioteca de parser de meta tags para obter a imagem do link do presente.
+5.  **Extração de Imagem de Presentes:** Utilizar biblioteca de parser de meta tags (Open Graph) para obter a imagem automaticamente a partir do link do produto. Upload manual é o fallback.
 
 ## 6. Fluxos de Usuário (User Flows)
 
@@ -111,8 +117,9 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 2.  Clica em "Novo Convite".
 3.  Define se é Padrinho ou Convidado.
 4.  Adiciona Nomes e Telefones dos integrantes.
-5.  Sistema gera Link.
-6.  Admin envia link via WhatsApp.
+5.  Faz upload da imagem de capa via seleção de arquivo ou colagem (Ctrl+V).
+6.  Sistema gera Link.
+7.  Admin envia link via WhatsApp.
 
 ### Fluxo 2: Convidado Confirma Presença
 1.  Convidado clica no link recebido.
@@ -121,3 +128,19 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 4.  Alterna *switch* para "Vou" ou "Não vou" em cada nome.
 5.  Clica em "Confirmar".
 6.  Sistema exibe modal/sucesso e libera botão "Lista de Presentes".
+
+### Fluxo 3: Convidado Interage com Lista de Presentes
+1.  Convidado confirmado acessa a lista de presentes.
+2.  Visualiza itens com status **Livre** ou **Escolhido**.
+3.  Clica em um presente com status **Livre**.
+4.  Sistema atualiza o status do presente para **Escolhido**.
+5.  Presente passa a aparecer como indisponível para os demais convidados.
+
+### Fluxo 4: Admin Cadastra Presente
+1.  Admin acessa painel "Presentes".
+2.  Clica em "Novo Presente".
+3.  Informa Nome e Link de Compra.
+4.  Sistema tenta extrair automaticamente a imagem via Open Graph da URL.
+5.  Se a extração falhar, admin realiza upload manual da imagem.
+6.  Admin salva o presente (status inicial: **Livre**, visível na lista pública).
+7.  Admin pode a qualquer momento desabilitar (ocultar da lista pública) ou excluir permanentemente o presente.
