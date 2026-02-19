@@ -18,8 +18,9 @@ O sistema operará em dois contextos distintos:
 
 **RF-02: Adição de Pessoas ao Convite**
 * Deve ser possível adicionar múltiplas pessoas a um único Convite.
-* **Campos:** Nome Completo, Telefone (WhatsApp).
+* **Campos:** Nome Completo, Telefone (WhatsApp), **É Criança** (booleano).
 * **Status Individual:** Cada pessoa dentro do convite deve ter um status: `Pendente` (padrão), `Confirmado`, `Não Irá`.
+* O campo **é criança** (`isChild`) permite que o sistema contabilize separadamente adultos e crianças nos dashboards.
 
 **RF-03: Geração de Link Único e RSVP**
 * O sistema deve gerar um *slug* ou *hash* único (UUID) para cada Convite criado.
@@ -49,7 +50,7 @@ O sistema operará em dois contextos distintos:
 * *Imagem do Presente:* A imagem do presente deve ser inputada pelo admin através de um link.
 * O admin pode **desabilitar** um presente (ocultá-lo da lista pública) ou **excluí-lo permanentemente**. Ambas as ações devem estar disponíveis.
 * Cada presente possui um **status de disponibilidade**: `Livre` (disponível para escolha) ou `Escolhido` (reservado por um convidado).
-* O admin deve poder visualizar qual convite (família) escolheu cada presente na interface administrativa.
+* O admin deve poder visualizar **qual convíte (família) escolheu cada presente** na interface administrativa — o backend registra o vínculo pelo campo `chosen_by_invitation_id`.
 * Os convidados devem poder visualizar os presentes já escolhidos mas terem indicação visual do status, mas não devem visualizar os desabilitados.
 
 **RF-08: Visualização e Interação pelo Convidado**
@@ -86,6 +87,7 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 * `full_name`: String
 * `phone`: String
 * `status`: Enum (`pending`, `confirmed`, `declined`)
+* `is_child`: Boolean — indica se o convidado é criança (padrão: `false`); contabilizado separadamente nos dashboards
 
 ### Tabela: `gifts`
 * `id`: UUID (Primary Key)

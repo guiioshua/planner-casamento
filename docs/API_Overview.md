@@ -56,7 +56,9 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "guests": [
     {
       "fullName": "João Souza",
-      "phone": "11999999999"
+      "phone": "11999999999",
+      "status": "PENDING",      // Optional (defaults to PENDING, Enum: PENDING, CONFIRMED, DECLINED)
+      "isChild": false          // Boolean — must use key "isChild" (not "child")
     }
   ]
 }
@@ -77,7 +79,8 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
       "id": "uuid",
       "fullName": "João Souza",
       "phone": "...",
-      "status": "PENDING"
+      "status": "PENDING",
+      "isChild": false
     }
   ]
 }
@@ -141,10 +144,12 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
 
 ### Mark as Chosen (Guest Action)
 - **PATCH** `/gifts/{id}/choose`
+- **Body:** `ChooseGiftRequest` (JSON)
 - **Response:** `GiftResponse`
 - **Behavior:**
   - Changes status to `CHOSEN`.
-  - Throws error if already chosen.
+  - Links the gift to the invitation family (via `invitationSlug`).
+  - Throws error if gift is already chosen.
 
 ### Delete Gift
 - **DELETE** `/gifts/{id}`
@@ -163,6 +168,13 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
 }
 ```
 
+**`ChooseGiftRequest`:**
+```json
+{
+  "invitationSlug": "familia-souza-abc123" // Slug of the guest's invitation; links gift to family
+}
+```
+
 **`GiftResponse`:**
 ```json
 {
@@ -171,9 +183,12 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "purchaseLink": "...",
   "imageUrl": "...",
   "status": "AVAILABLE",
-  "visible": true
+  "visible": true,
+  "chosenByFamilyName": "Família Souza" // Null when status is AVAILABLE
 }
 ```
+
+> **Note:** The `isChild` field in guest DTOs is annotated with `@JsonProperty("isChild")` on the backend to prevent Jackson from stripping the `is` prefix (which would otherwise expose it as `"child"` in JSON).
 
 ---
 
