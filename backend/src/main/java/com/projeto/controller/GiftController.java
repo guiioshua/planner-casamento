@@ -1,6 +1,6 @@
-
 package com.projeto.controller;
 
+import com.projeto.dto.ChooseGiftRequest;
 import com.projeto.dto.GiftRequest;
 import com.projeto.dto.GiftResponse;
 import com.projeto.service.GiftService;
@@ -41,8 +41,9 @@ public class GiftController {
     }
 
     @PatchMapping("/{id}/choose")
-    public GiftResponse choose(@PathVariable UUID id) {
-        return giftService.choose(id);
+    public GiftResponse choose(@PathVariable UUID id, @RequestBody(required = false) ChooseGiftRequest request) {
+        String slug = request != null ? request.getInvitationSlug() : null;
+        return giftService.choose(id, slug);
     }
 
     @DeleteMapping("/{id}")

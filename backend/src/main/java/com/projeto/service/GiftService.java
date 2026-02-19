@@ -4,7 +4,9 @@ import com.projeto.dto.GiftRequest;
 import com.projeto.dto.GiftResponse;
 import com.projeto.model.Gift;
 import com.projeto.model.GiftStatus;
+import com.projeto.model.Invitation;
 import com.projeto.repository.GiftRepository;
+import com.projeto.repository.InvitationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class GiftService {
 
     private final GiftRepository giftRepository;
+    private final InvitationRepository invitationRepository;
 
     @Transactional(readOnly = true)
     public List<GiftResponse> findAll() {
@@ -40,7 +43,6 @@ public class GiftService {
                 .name(request.getName())
                 .purchaseLink(request.getPurchaseLink())
                 .imageUrl(request.getImageUrl())
-                // Use getVisible() because the DTO field is a 'Boolean' wrapper
                 .visible(request.getVisible() != null ? request.getVisible() : true)
                 .status(request.getStatus() != null ? request.getStatus() : GiftStatus.AVAILABLE)
                 .build();
@@ -67,13 +69,21 @@ public class GiftService {
     }
 
     @Transactional
-    public GiftResponse choose(UUID id) {
+    public GiftResponse choose(UUID id, String invitationSlug) {
         Gift gift = giftRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Gift not found: " + id));
         if (gift.getStatus() == GiftStatus.CHOSEN) {
             throw new IllegalStateException("Gift already chosen: " + id);
         }
+
+        Invitation invitation = null;
+        if (invitationSlug != null && !invitationSlug.isBlank()) {
+            invitation = invitationRepository.findBySlug(invitationSlug)
+                    .orElse(null); // Attribution is best-effort; don't block if slug is bad
+        }
+
         gift.setStatus(GiftStatus.CHOSEN);
+        gift.setChosenByInvitation(invitation);
         return toResponse(giftRepository.save(gift));
     }
 
@@ -86,15 +96,18 @@ public class GiftService {
     }
 
     private GiftResponse toResponse(Gift gift) {
+        String chosenByFamilyName = gift.getChosenByInvitation() != null
+                ? gift.getChosenByInvitation().getFamilyName()
+                : null;
+
         return GiftResponse.builder()
                 .id(gift.getId())
                 .name(gift.getName())
                 .purchaseLink(gift.getPurchaseLink())
                 .imageUrl(gift.getImageUrl())
                 .status(gift.getStatus())
-                // Verify if your Gift Model uses Boolean (getVisible) or boolean (isVisible)
-                // Assuming Boolean to match DTO:
                 .visible(gift.isVisible())
+                .chosenByFamilyName(chosenByFamilyName)
                 .build();
     }
 }

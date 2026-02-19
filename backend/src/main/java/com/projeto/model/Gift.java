@@ -33,4 +33,8 @@ public class Gift {
 
     @Column(name = "is_visible", nullable = false)
     private boolean visible;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chosen_by_invitation_id")
+    private Invitation chosenByInvitation;
 }
