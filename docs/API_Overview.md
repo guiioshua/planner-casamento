@@ -137,7 +137,7 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
 ### Update Gift
 - **PUT** `/gifts/{id}`
 - **Body:** `GiftRequest` (JSON)
-- **Title:** `GiftRequest`
+- **Response:** `GiftResponse`
 
 ### Mark as Chosen (Guest Action)
 - **PATCH** `/gifts/{id}/choose`
