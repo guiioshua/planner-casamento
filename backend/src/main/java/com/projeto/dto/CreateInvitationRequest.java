@@ -27,6 +27,8 @@ public class CreateInvitationRequest {
 
     String coverImageUrl;
 
+    List<String> categories;
+
     @Valid
     List<CreateGuestRequest> guests;
 }

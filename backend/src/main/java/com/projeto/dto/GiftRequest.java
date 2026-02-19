@@ -8,19 +8,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class GiftRequest {
 
     @NotBlank
-    String name;
+    private String name;
 
-    String purchaseLink;
+    private String purchaseLink;
 
-    String imageUrl;
+    private String imageUrl;
 
-    Boolean visible;
+    private Boolean visible;
 
-    GiftStatus status;
+    @com.fasterxml.jackson.annotation.JsonProperty("category")
+    private String category;
+
+    private GiftStatus status;
 }

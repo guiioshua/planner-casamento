@@ -16,5 +16,6 @@ public class GiftResponse {
     String imageUrl;
     GiftStatus status;
     boolean visible;
+    String category;
     String chosenByFamilyName;
 }

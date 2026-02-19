@@ -19,6 +19,6 @@ public class InvitationResponse {
     String coverImageUrl;
     String messageBody;
     OffsetDateTime createdAt;
+    List<String> categories;
     List<GuestDto> guests;
 }
-

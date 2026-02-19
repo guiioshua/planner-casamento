@@ -44,6 +44,7 @@ public class GiftService {
                 .purchaseLink(request.getPurchaseLink())
                 .imageUrl(request.getImageUrl())
                 .visible(request.getVisible() != null ? request.getVisible() : true)
+                .category(request.getCategory() != null ? request.getCategory() : "A")
                 .status(request.getStatus() != null ? request.getStatus() : GiftStatus.AVAILABLE)
                 .build();
         return toResponse(giftRepository.save(gift));
@@ -57,6 +58,9 @@ public class GiftService {
         gift.setName(request.getName());
         gift.setPurchaseLink(request.getPurchaseLink());
         gift.setImageUrl(request.getImageUrl());
+        if (request.getCategory() != null) {
+            gift.setCategory(request.getCategory());
+        }
         if (request.getStatus() != null) {
             gift.setStatus(request.getStatus());
         }
@@ -107,6 +111,7 @@ public class GiftService {
                 .imageUrl(gift.getImageUrl())
                 .status(gift.getStatus())
                 .visible(gift.isVisible())
+                .category(gift.getCategory())
                 .chosenByFamilyName(chosenByFamilyName)
                 .build();
     }

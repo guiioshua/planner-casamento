@@ -40,8 +40,9 @@ public class InvitationService {
         Invitation invitation = Invitation.builder()
                 .familyName(request.getFamilyName())
                 .type(request.getType())
-                .coverImageUrl(finalImageUrl) // Uses the determined URL
+                .coverImageUrl(finalImageUrl)
                 .messageBody(request.getMessageBody())
+                .categories(request.getCategories() != null ? request.getCategories() : List.of("A"))
                 .build();
 
         if (request.getGuests() != null) {
@@ -78,12 +79,18 @@ public class InvitationService {
         invitation.setType(request.getType());
         invitation.setMessageBody(request.getMessageBody());
 
+        if (request.getCategories() != null) {
+            invitation.setCategories(request.getCategories());
+        }
+
         if (uploadedImageUrl != null) {
             invitation.setCoverImageUrl(uploadedImageUrl);
         } else if (request.getCoverImageUrl() != null && !request.getCoverImageUrl().isBlank()) {
             invitation.setCoverImageUrl(request.getCoverImageUrl());
         }
 
+        // We are REPLACING the guest list here in the update method.
+        // A more granular approach might be better, but sticking to existing logic.
         invitation.getGuests().clear();
         if (request.getGuests() != null) {
             for (CreateGuestRequest guestRequest : request.getGuests()) {
@@ -140,6 +147,7 @@ public class InvitationService {
                 .coverImageUrl(invitation.getCoverImageUrl())
                 .messageBody(invitation.getMessageBody())
                 .createdAt(invitation.getCreatedAt())
+                .categories(invitation.getCategories())
                 .guests(guestDtos)
                 .build();
     }

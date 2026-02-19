@@ -28,6 +28,12 @@ public class Invitation {
     @Column(name = "type", nullable = false)
     private InvitationType type;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "invitation_categories", joinColumns = @JoinColumn(name = "invitation_id"))
+    @Column(name = "category")
+    @Builder.Default
+    private List<String> categories = new ArrayList<>();
+
     @Column(name = "slug", nullable = false, unique = true, updatable = false)
     private String slug;
 
@@ -57,6 +63,10 @@ public class Invitation {
         }
         if (this.type == null) {
             this.type = InvitationType.STANDARD;
+        }
+        if (this.categories == null || this.categories.isEmpty()) {
+            this.categories = new ArrayList<>();
+            this.categories.add("A");
         }
     }
 

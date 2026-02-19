@@ -15,6 +15,7 @@ O sistema operará em dois contextos distintos:
 * O sistema deve permitir criar um "Convite".
 * Um convite agrupa uma ou mais pessoas (ex: Família Silva).
 * **Campos:** Nome do Convite (identificador amigável), Tipo (Convite Padrão ou Padrinhos).
+* **Categorias:** O convite deve conter uma lista de categorias (ex: "A", "B", "C") que determina quais presentes os convidados poderão visualizar.
 
 **RF-02: Adição de Pessoas ao Convite**
 * Deve ser possível adicionar múltiplas pessoas a um único Convite.
@@ -52,16 +53,17 @@ O sistema operará em dois contextos distintos:
 ### 3.3. Módulo de Lista de Presentes
 **RF-07: Cadastro de Presentes**
 * O admin adiciona itens à lista de desejos.
-* **Campos:** Nome do Presente, Link de Compra (URL externa).
+* **Campos:** Nome do Presente, Link de Compra (URL externa), **Categoria** (ex: "A", "B", "C").
 * *Imagem do Presente:* A imagem do presente deve ser inputada pelo admin através de um link.
 * O admin pode **desabilitar** um presente (ocultá-lo da lista pública) ou **excluí-lo permanentemente**. Ambas as ações devem estar disponíveis.
 * Cada presente possui um **status de disponibilidade**: `Livre` (disponível para escolha) ou `Escolhido` (reservado por um convidado).
 * O admin deve poder visualizar **qual convíte (família) escolheu cada presente** na interface administrativa — o backend registra o vínculo pelo campo `chosen_by_invitation_id`.
 * Os convidados devem poder visualizar os presentes já escolhidos mas terem indicação visual do status, mas não devem visualizar os desabilitados.
 
-**RF-08: Visualização e Interação pelo Convidado**
+**RF-08: Visualização e Interação pelo Convidado (Com Filtragem de Categoria)**
 * Após o convidado confirmar presença (Status = `Confirmado`) na tela de RSVP, o sistema deve exibir um botão ou seção "Ver Lista de Presentes".
 * Se o convidado acessar o link do convite novamente e já estiver confirmado, a lista deve estar visível imediatamente.
+* **Filtragem por Categoria:** O convidado só visualizará os presentes cuja **Categoria** esteja contida na lista de **Categorias do seu Convite**. Ex: Se o convite tem categorias ["A", "B"], o convidado vê presentes "A" e "B", mas não "C".
 * Na lista de presentes, cada item exibe seu status: **Livre** ou **Escolhido**.
 * O convidado pode **marcar um presente como "Escolhido"**, sinalizando sua intenção de presentear com aquele item. Após marcado, o presente passa a aparecer como indisponível para os demais convidados e o sistema registra o vínculo com o convite (família) de origem.
 

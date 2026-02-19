@@ -27,6 +27,9 @@ public class Gift {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "category")
+    private String category;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private GiftStatus status;
