@@ -49,13 +49,14 @@ O sistema operará em dois contextos distintos:
 * *Imagem do Presente:* A imagem do presente deve ser inputada pelo admin através de um link.
 * O admin pode **desabilitar** um presente (ocultá-lo da lista pública) ou **excluí-lo permanentemente**. Ambas as ações devem estar disponíveis.
 * Cada presente possui um **status de disponibilidade**: `Livre` (disponível para escolha) ou `Escolhido` (reservado por um convidado).
+* O admin deve poder visualizar qual convite (família) escolheu cada presente na interface administrativa.
 * Os convidados devem poder visualizar os presentes já escolhidos mas terem indicação visual do status, mas não devem visualizar os desabilitados.
 
 **RF-08: Visualização e Interação pelo Convidado**
 * Após o convidado confirmar presença (Status = `Confirmado`) na tela de RSVP, o sistema deve exibir um botão ou seção "Ver Lista de Presentes".
 * Se o convidado acessar o link do convite novamente e já estiver confirmado, a lista deve estar visível imediatamente.
 * Na lista de presentes, cada item exibe seu status: **Livre** ou **Escolhido**.
-* O convidado pode **marcar um presente como "Escolhido"**, sinalizando sua intenção de presentear com aquele item. Após marcado, o presente passa a aparecer como indisponível para os demais convidados.
+* O convidado pode **marcar um presente como "Escolhido"**, sinalizando sua intenção de presentear com aquele item. Após marcado, o presente passa a aparecer como indisponível para os demais convidados e o sistema registra o vínculo com o convite (família) de origem.
 
 ### 3.4. Módulo Financeiro (CRM de Fornecedores)
 **RF-09: Gestão de Prestadores de Serviço**
@@ -93,6 +94,7 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 * `image_url`: String
 * `status`: Enum (`available`, `chosen`) — **substitui o campo `is_active` booleano**
 * `is_visible`: Boolean (controla se o presente aparece na lista pública; substitui o uso de `is_active` para visibilidade)
+* `chosen_by_invitation_id`: UUID (Foreign Key -> invitations.id) — atribuição do presente escolhido ao convite.
 
 ### Tabela: `vendors`
 * `id`: UUID (Primary Key)
