@@ -24,4 +24,10 @@ public class RsvpController {
             @Valid @RequestBody RsvpUpdateRequest request) {
         return invitationService.updateGuestStatuses(slug, request);
     }
+
+    @PostMapping("/{slug}/guests")
+    public InvitationResponse addGuest(@PathVariable("slug") String slug,
+            @Valid @RequestBody com.projeto.dto.CreateGuestRequest request) {
+        return invitationService.addGuestToInvitation(slug, request);
+    }
 }

@@ -153,4 +153,23 @@ public class InvitationService {
                 .isChild(guest.isChild())
                 .build();
     }
+
+    @Transactional
+    public InvitationResponse addGuestToInvitation(String slug, CreateGuestRequest request) {
+        Invitation invitation = invitationRepository.findBySlug(slug)
+                .orElseThrow(() -> new EntityNotFoundException("Invitation not found for slug: " + slug));
+
+        GuestStatus status = GuestStatus.PENDING;
+        if (request.getStatus() != null) {
+            try {
+                status = GuestStatus.valueOf(request.getStatus().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // Keep default
+            }
+        }
+
+        invitation.addGuest(request.getFullName(), request.getPhone(), status, request.isChild());
+        Invitation saved = invitationRepository.save(invitation);
+        return toResponse(saved);
+    }
 }
