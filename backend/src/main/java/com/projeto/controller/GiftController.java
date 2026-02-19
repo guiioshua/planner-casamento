@@ -36,19 +36,19 @@ public class GiftController {
     }
 
     @PutMapping("/{id}")
-    public GiftResponse update(@PathVariable UUID id, @Valid @RequestBody GiftRequest request) {
+    public GiftResponse update(@PathVariable("id") UUID id, @Valid @RequestBody GiftRequest request) {
         return giftService.update(id, request);
     }
 
     @PatchMapping("/{id}/choose")
-    public GiftResponse choose(@PathVariable UUID id, @RequestBody(required = false) ChooseGiftRequest request) {
+    public GiftResponse choose(@PathVariable("id") UUID id, @RequestBody(required = false) ChooseGiftRequest request) {
         String slug = request != null ? request.getInvitationSlug() : null;
         return giftService.choose(id, slug);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    public void delete(@PathVariable("id") UUID id) {
         giftService.delete(id);
     }
 }

@@ -37,13 +37,13 @@ public class InvitationController {
         if (coverImage != null && !coverImage.isEmpty()) {
             imageUrl = storageService.store(coverImage);
         }
-        
+
         return invitationService.createInvitation(request, imageUrl);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public InvitationResponse update(
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             @Valid @RequestPart("data") CreateInvitationRequest request,
             @RequestPart(value = "coverImage", required = false) MultipartFile coverImage) {
 
@@ -57,12 +57,12 @@ public class InvitationController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    public void delete(@PathVariable("id") UUID id) {
         invitationService.deleteInvitation(id);
     }
 
     @GetMapping("/slug/{slug}")
-    public InvitationResponse getBySlug(@PathVariable String slug) {
+    public InvitationResponse getBySlug(@PathVariable("slug") String slug) {
         return invitationService.getBySlug(slug);
     }
 }

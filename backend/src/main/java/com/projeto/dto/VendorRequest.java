@@ -2,13 +2,17 @@ package com.projeto.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Value
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class VendorRequest {
 
     @NotBlank
@@ -28,4 +32,3 @@ public class VendorRequest {
 
     String notes;
 }
-

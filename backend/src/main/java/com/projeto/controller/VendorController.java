@@ -30,14 +30,13 @@ public class VendorController {
     }
 
     @PutMapping("/{id}")
-    public VendorResponse update(@PathVariable UUID id, @Valid @RequestBody VendorRequest request) {
+    public VendorResponse update(@PathVariable("id") UUID id, @Valid @RequestBody VendorRequest request) {
         return vendorService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    public void delete(@PathVariable("id") UUID id) {
         vendorService.delete(id);
     }
 }
-

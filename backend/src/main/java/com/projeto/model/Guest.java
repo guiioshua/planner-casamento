@@ -31,5 +31,7 @@ public class Guest {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private GuestStatus status;
-}
 
+    @Column(name = "is_child", nullable = false)
+    private boolean isChild;
+}

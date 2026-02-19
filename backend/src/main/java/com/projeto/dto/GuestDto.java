@@ -1,5 +1,6 @@
 package com.projeto.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.projeto.model.GuestStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,5 +22,7 @@ public class GuestDto {
 
     @NotNull
     GuestStatus status;
-}
 
+    @JsonProperty("isChild")
+    boolean isChild;
+}

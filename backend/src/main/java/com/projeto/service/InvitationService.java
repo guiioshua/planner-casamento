@@ -53,7 +53,8 @@ public class InvitationService {
                     } catch (IllegalArgumentException ignored) {
                     }
                 }
-                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone(), status);
+                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone(), status,
+                        guestRequest.isChild());
             }
         }
 
@@ -93,7 +94,8 @@ public class InvitationService {
                     } catch (IllegalArgumentException ignored) {
                     }
                 }
-                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone(), status);
+                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone(), status,
+                        guestRequest.isChild());
             }
         }
 
@@ -148,6 +150,7 @@ public class InvitationService {
                 .fullName(guest.getFullName())
                 .phone(guest.getPhone())
                 .status(guest.getStatus())
+                .isChild(guest.isChild())
                 .build();
     }
 }

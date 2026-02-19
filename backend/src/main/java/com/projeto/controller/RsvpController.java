@@ -15,13 +15,13 @@ public class RsvpController {
     private final InvitationService invitationService;
 
     @GetMapping("/{slug}")
-    public InvitationResponse getInvitationForRsvp(@PathVariable String slug) {
+    public InvitationResponse getInvitationForRsvp(@PathVariable("slug") String slug) {
         return invitationService.getBySlug(slug);
     }
 
     @PostMapping("/{slug}/confirm")
-    public InvitationResponse confirmRsvp(@PathVariable String slug, @Valid @RequestBody RsvpUpdateRequest request) {
+    public InvitationResponse confirmRsvp(@PathVariable("slug") String slug,
+            @Valid @RequestBody RsvpUpdateRequest request) {
         return invitationService.updateGuestStatuses(slug, request);
     }
 }
-
