@@ -38,6 +38,12 @@ O sistema operará em dois contextos distintos:
 **RF-05: Envio (Manual)**
 * O sistema não envia mensagens automaticamente, mas deve fornecer um botão "Copiar Link" ou "Enviar via WhatsApp" que abre a API do WhatsApp (`wa.me`) com uma mensagem pré-definida contendo o link do convite para o número da primeira pessoa cadastrada naquele convite, se disponível.
 
+**RF-11: Auto-inclusão de Acompanhantes pelo Convidado**
+* Na interface de RSVP, o convidado deve ter a opção de adicionar novas pessoas (acompanhantes) ao seu convite.
+* **Campos:** Nome Completo, Telefone (opcional), É Criança (booleano).
+* **Comportamento:** Pessoas adicionadas diretamente pelo convidado na tela de RSVP são registradas com o status `Confirmado` por padrão.
+* O sistema deve exibir uma mensagem instrutiva como "Se alguém faltou, adicione o nome" para facilitar o processo em casamentos grandes.
+
 ### 3.2. Módulo de Padrinhos (Especialização)
 **RF-06: Segregação de Padrinhos**
 * O sistema deve permitir filtrar ou visualizar separadamente a lista de Padrinhos.
@@ -130,9 +136,10 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 1.  Convidado clica no link recebido.
 2.  Visualiza "Capa" e "Mensagem".
 3.  Visualiza lista com seu nome e familiares.
-4.  Alterna *switch* para "Vou" ou "Não vou" em cada nome.
-5.  Clica em "Confirmar".
-6.  Sistema exibe modal/sucesso e libera botão "Lista de Presentes".
+4.  (Opcional) Caso falte algum acompanhante, o convidado utiliza a opção "Adicionar pessoa", preenche os dados e confirma a inclusão.
+5.  Alterna *switch* para "Vou" ou "Não vou" em cada nome.
+6.  Clica em "Confirmar".
+7.  Sistema exibe modal/sucesso e libera botão "Lista de Presentes".
 
 ### Fluxo 3: Convidado Interage com Lista de Presentes
 1.  Convidado confirmado acessa a lista de presentes.
