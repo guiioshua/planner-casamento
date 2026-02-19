@@ -12,5 +12,6 @@ public class CreateGuestRequest {
     String fullName;
 
     String phone;
-}
 
+    String status;
+}

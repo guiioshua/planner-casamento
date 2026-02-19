@@ -60,13 +60,13 @@ public class Invitation {
         }
     }
 
-    public Guest addGuest(String fullName, String phone) {
+    public Guest addGuest(String fullName, String phone, GuestStatus status) {
         Guest guest = Guest.builder()
                 .id(UUID.randomUUID())
                 .invitation(this)
                 .fullName(fullName)
                 .phone(phone)
-                .status(GuestStatus.PENDING)
+                .status(status != null ? status : GuestStatus.PENDING)
                 .build();
         this.guests.add(guest);
         return guest;
@@ -77,4 +77,3 @@ public class Invitation {
         guest.setInvitation(null);
     }
 }
-

@@ -46,7 +46,14 @@ public class InvitationService {
 
         if (request.getGuests() != null) {
             for (CreateGuestRequest guestRequest : request.getGuests()) {
-                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone());
+                GuestStatus status = null;
+                if (guestRequest.getStatus() != null) {
+                    try {
+                        status = GuestStatus.valueOf(guestRequest.getStatus().toUpperCase());
+                    } catch (IllegalArgumentException ignored) {
+                    }
+                }
+                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone(), status);
             }
         }
 
@@ -79,7 +86,14 @@ public class InvitationService {
         invitation.getGuests().clear();
         if (request.getGuests() != null) {
             for (CreateGuestRequest guestRequest : request.getGuests()) {
-                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone());
+                GuestStatus status = null;
+                if (guestRequest.getStatus() != null) {
+                    try {
+                        status = GuestStatus.valueOf(guestRequest.getStatus().toUpperCase());
+                    } catch (IllegalArgumentException ignored) {
+                    }
+                }
+                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone(), status);
             }
         }
 
@@ -137,4 +151,3 @@ public class InvitationService {
                 .build();
     }
 }
-
