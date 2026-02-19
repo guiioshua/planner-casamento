@@ -29,6 +29,9 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/pnpm-debug.log*
 
+# Imagens dos convites
+/uploads
+
 # Docker
 **/.env
 **/.env.local
