@@ -41,7 +41,7 @@ public class GiftService {
                 .purchaseLink(request.getPurchaseLink())
                 .imageUrl(request.getImageUrl())
                 // Use getVisible() because the DTO field is a 'Boolean' wrapper
-                .visible(request.getVisible())
+                .visible(request.getVisible() != null ? request.getVisible() : true)
                 .status(request.getStatus() != null ? request.getStatus() : GiftStatus.AVAILABLE)
                 .build();
         return toResponse(giftRepository.save(gift));
@@ -55,10 +55,13 @@ public class GiftService {
         gift.setName(request.getName());
         gift.setPurchaseLink(request.getPurchaseLink());
         gift.setImageUrl(request.getImageUrl());
-        gift.setStatus(request.getStatus());
+        if (request.getStatus() != null) {
+            gift.setStatus(request.getStatus());
+        }
 
-        // Use getVisible() here too
-        gift.setVisible(request.getVisible());
+        if (request.getVisible() != null) {
+            gift.setVisible(request.getVisible());
+        }
 
         return toResponse(giftRepository.save(gift));
     }
