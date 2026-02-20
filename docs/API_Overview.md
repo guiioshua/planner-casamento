@@ -1,65 +1,65 @@
-# Planner Casamento - API Overview
+# Planejador de Casamento - Visão Geral da API
 
-Based on the current backend implementation (Spring Boot Controllers & DTOs).
+Baseado na implementação atual do backend (Controllers & DTOs do Spring Boot).
 
-**Base URL:** `http://localhost:8081/api/v1`
+**URL Base:** `http://localhost:8081/api/v1`
 
 ---
 
-## 1. Invitations (Convites)
+## 1. Convites (Invitations)
 
 **Controller:** `InvitationController`
-**Base Path:** `/invitations`
+**Caminho Base:** `/invitations`
 
-### List All Invitations
+### Listar Todos os Convites
 - **GET** `/invitations`
-- **Response:** `List<InvitationResponse>` (JSON)
+- **Resposta:** `List<InvitationResponse>` (JSON)
 
-### Get Invitation by Slug
+### Obter Convite por Slug
 - **GET** `/invitations/slug/{slug}`
-- **Response:** `InvitationResponse` (JSON)
+- **Resposta:** `InvitationResponse` (JSON)
 
-### Create Invitation
+### Criar Convite
 - **POST** `/invitations`
 - **Content-Type:** `multipart/form-data`
-- **Parts:**
-  - `data` (JSON): `CreateInvitationRequest` schema
-  - `coverImage` (File, Optional): Image file for the cover.
-- **Behavior:**
-  - If `coverImage` file is provided, it is uploaded and its URL is used.
-  - Generates a unique `slug` and `id`.
-  - Creates associated `guests`.
+- **Partes:**
+  - `data` (JSON): Esquema `CreateInvitationRequest`
+  - `coverImage` (Arquivo, Opcional): Arquivo de imagem para a capa.
+- **Comportamento:**
+  - Se o arquivo `coverImage` for fornecido, ele é carregado e sua URL é usada.
+  - Gera um `slug` e `id` únicos.
+  - Cria os `convidados` associados.
 
-### Update Invitation
+### Atualizar Convite
 - **PUT** `/invitations/{id}`
 - **Content-Type:** `multipart/form-data`
-- **Parts:**
-  - `data` (JSON): `CreateInvitationRequest` schema
-  - `coverImage` (File, Optional): New image file.
-- **Behavior:**
-  - Updates invitation details.
-  - **Warning:** Currently replaces **ALL** guests (deletes old ones, creates new ones with new IDs).
+- **Partes:**
+  - `data` (JSON): Esquema `CreateInvitationRequest`
+  - `coverImage` (Arquivo, Opcional): Novo arquivo de imagem.
+- **Comportamento:**
+  - Atualiza os detalhes do convite.
+  - **Aviso:** Atualmente substitui **TODOS** os convidados (remove os antigos, cria novos com novos IDs).
 
-### Delete Invitation
+### Excluir Convite
 - **DELETE** `/invitations/{id}`
-- **Response:** `204 No Content`
+- **Resposta:** `204 No Content`
 
-#### Data Structures
+#### Estruturas de Dados
 
-**`CreateInvitationRequest` (JSON part):**
+**`CreateInvitationRequest` (parte JSON):**
 ```json
 {
   "familyName": "Família Souza",
   "type": "STANDARD",        // Enum: STANDARD, GODPARENT
   "messageBody": "Venha celebrar conosco!",
-  "coverImageUrl": "http://..." // Optional: Logic prefers uploaded file if present
-  "categories": ["A", "B"], // List of categories this invitation belongs to
+  "coverImageUrl": "http://...", // Opcional: A lógica prefere o arquivo enviado, se presente
+  "categories": ["A", "B"], // Lista de categorias às quais este convite pertence
   "guests": [
     {
       "fullName": "João Souza",
       "phone": "11999999999",
-      "status": "PENDING",      // Optional (defaults to PENDING, Enum: PENDING, CONFIRMED, DECLINED)
-      "isChild": false          // Boolean — must use key "isChild" (not "child")
+      "status": "PENDING",      // Opcional (padrão PENDING, Enum: PENDING, CONFIRMED, DECLINED)
+      "isChild": false          // Booleano — deve usar a chave "isChild" (não "child")
     }
   ]
 }
@@ -71,7 +71,7 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "id": "uuid",
   "familyName": "Família Souza",
   "type": "STANDARD",
-  "slug": "unique-slug-string",
+  "slug": "slug-unico-string",
   "coverImageUrl": "http://localhost:8081/uploads/...",
   "messageBody": "...",
   "createdAt": "2024-01-01T10:00:00Z",
@@ -90,22 +90,22 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
 
 ---
 
-## 2. RSVP (Public Access)
+## 2. RSVP (Acesso Público)
 
 **Controller:** `RsvpController`
-**Base Path:** `/rsvp`
+**Caminho Base:** `/rsvp`
 
-### Get Public Invitation Data
+### Obter Dados Públicos do Convite
 - **GET** `/rsvp/{slug}`
-- **Response:** `InvitationResponse` (Same as above)
-- **Use Case:** Public landing page for the guest to see their invite.
+- **Resposta:** `InvitationResponse` (Igual ao acima)
+- **Caso de Uso:** Página de destino pública para o convidado ver seu convite.
 
-### Confirm/Decline Presence
+### Confirmar/Recusar Presença
 - **POST** `/rsvp/{slug}/confirm`
-- **Body:** `RsvpUpdateRequest` (JSON)
-- **Response:** `InvitationResponse` (Updated)
+- **Corpo:** `RsvpUpdateRequest` (JSON)
+- **Resposta:** `InvitationResponse` (Atualizada)
 
-#### Data Structures
+#### Estruturas de Dados
 
 **`RsvpUpdateRequest`:**
 ```json
@@ -116,48 +116,48 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   }
 }
 ```
-*Valid Statuses:* `PENDING`, `CONFIRMED`, `DECLINED`
+*Status Válidos:* `PENDING`, `CONFIRMED`, `DECLINED`
 
 ---
 
-## 3. Gifts (Lista de Presentes)
+## 3. Presentes (Lista de Presentes)
 
 **Controller:** `GiftController`
-**Base Path:** `/gifts`
+**Caminho Base:** `/gifts`
 
-### List All Gifts (Admin)
+### Listar Todos os Presentes (Admin)
 - **GET** `/gifts`
-- **Response:** `List<GiftResponse>` (JSON)
+- **Resposta:** `List<GiftResponse>` (JSON)
 
-### List Visible Gifts (Public)
+### Listar Presentes Visíveis (Público)
 - **GET** `/gifts/visible`
-- **Response:** `List<GiftResponse>` (JSON)
-- **Behavior:** Returns all gifts where `visible = true`. Includes status (`AVAILABLE` or `CHOSEN`).
+- **Resposta:** `List<GiftResponse>` (JSON)
+- **Comportamento:** Retorna todos os presentes onde `visible = true`. Inclui o status (`AVAILABLE` ou `CHOSEN`).
 
-### Create Gift
+### Criar Presente
 - **POST** `/gifts`
-- **Body:** `GiftRequest` (JSON)
-- **Response:** `GiftResponse`
+- **Corpo:** `GiftRequest` (JSON)
+- **Resposta:** `GiftResponse`
 
-### Update Gift
+### Atualizar Presente
 - **PUT** `/gifts/{id}`
-- **Body:** `GiftRequest` (JSON)
-- **Response:** `GiftResponse`
+- **Corpo:** `GiftRequest` (JSON)
+- **Resposta:** `GiftResponse`
 
-### Mark as Chosen (Guest Action)
+### Marcar como Escolhido (Ação do Convidado)
 - **PATCH** `/gifts/{id}/choose`
-- **Body:** `ChooseGiftRequest` (JSON)
-- **Response:** `GiftResponse`
-- **Behavior:**
-  - Changes status to `CHOSEN`.
-  - Links the gift to the invitation family (via `invitationSlug`).
-  - Throws error if gift is already chosen.
+- **Corpo:** `ChooseGiftRequest` (JSON)
+- **Resposta:** `GiftResponse`
+- **Comportamento:**
+  - Altera o status para `CHOSEN`.
+  - Vincula o presente à família do convite (através do `invitationSlug`).
+  - Lança erro se o presente já tiver sido escolhido.
 
-### Delete Gift
+### Excluir Presente
 - **DELETE** `/gifts/{id}`
-- **Response:** `204 No Content`
+- **Resposta:** `204 No Content`
 
-#### Data Structures
+#### Estruturas de Dados
 
 **`GiftRequest`:**
 ```json
@@ -165,16 +165,16 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "name": "Micro-ondas",
   "purchaseLink": "https://amazon...",
   "imageUrl": "https://...",
-  "visible": true,       // Optional (defaults to true)
-  "category": "A",       // Category for filtering (matches invitation categories)
-  "status": "AVAILABLE"  // Optional (defaults to AVAILABLE, Enum: AVAILABLE, CHOSEN)
+  "visible": true,       // Opcional (padrão true)
+  "category": "A",       // Categoria para filtragem (corresponde às categorias do convite)
+  "status": "AVAILABLE"  // Opcional (padrão AVAILABLE, Enum: AVAILABLE, CHOSEN)
 }
 ```
 
 **`ChooseGiftRequest`:**
 ```json
 {
-  "invitationSlug": "familia-souza-abc123" // Slug of the guest's invitation; links gift to family
+  "invitationSlug": "familia-souza-abc123" // Slug do convite do convidado; vincula o presente à família
 }
 ```
 
@@ -188,26 +188,26 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "status": "AVAILABLE",
   "visible": true,
   "category": "A",
-  "chosenByFamilyName": "Família Souza" // Null when status is AVAILABLE
+  "chosenByFamilyName": "Família Souza" // Nulo quando o status é AVAILABLE
 }
 ```
 
-> **Note:** The `isChild` field in guest DTOs is annotated with `@JsonProperty("isChild")` on the backend to prevent Jackson from stripping the `is` prefix (which would otherwise expose it as `"child"` in JSON).
+> **Nota:** O campo `isChild` nos DTOs de convidados é anotado com `@JsonProperty("isChild")` no backend para evitar que o Jackson remova o prefixo `is` (que, de outra forma, o exporia como `"child"` no JSON).
 
 ---
 
-## 4. Vendors (Fornecedores - Admin)
+## 4. Fornecedores (Admin)
 
 **Controller:** `VendorController`
-**Base Path:** `/vendors`
+**Caminho Base:** `/vendors`
 
-### CRUD Operations
-- **GET** `/vendors` → List all
-- **POST** `/vendors` → Create
-- **PUT** `/vendors/{id}` → Update
-- **DELETE** `/vendors/{id}` → Delete
+### Operações CRUD
+- **GET** `/vendors` → Listar todos
+- **POST** `/vendors` → Criar
+- **PUT** `/vendors/{id}` → Atualizar
+- **DELETE** `/vendors/{id}` → Excluir
 
-#### Data Structures
+#### Estruturas de Dados
 
 **`VendorRequest`:**
 ```json
@@ -218,8 +218,8 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "contactPhone": "11988888888",
   "price": 5000.00,
   "amountPaid": 1500.00,
-  "notes": "Pagar restante até dia 10"
+  "notes": "Pagar restante até o dia 10"
 }
 ```
 
-**`VendorResponse`:** Same fields as request + `id` (UUID).
+**`VendorResponse`:** Mesmos campos da requisição + `id` (UUID).
