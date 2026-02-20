@@ -14,8 +14,8 @@ O sistema operará em dois contextos distintos:
 **RF-01: Criação de Convites (Entidade Agrupadora)**
 * O sistema deve permitir criar um "Convite".
 * Um convite agrupa uma ou mais pessoas (ex: Família Silva).
-* **Campos:** Nome do Convite (identificador amigável), Tipo (Convite Padrão ou Padrinhos).
-* **Categorias:** O convite deve conter uma lista de categorias (ex: "A", "B", "C") que determina quais presentes os convidados poderão visualizar.
+* **Campos:** Nome do Convite (identificador amigável), Tipo (Convidado ou Padrinho).
+* **Categorias:** O convite deve conter uma lista de categorias (ex: "Barato", "Médio", "Caro") que determina quais presentes os convidados poderão visualizar. Um ícone de informação deve explicar este funcionamento no hover.
 
 **RF-02: Adição de Pessoas ao Convite**
 * Deve ser possível adicionar múltiplas pessoas a um único Convite.
@@ -26,18 +26,19 @@ O sistema operará em dois contextos distintos:
 **RF-03: Geração de Link Único e RSVP**
 * O sistema deve gerar um *slug* ou *hash* único (UUID) para cada Convite criado.
 * Ao acessar `app.com/rsvp/{hash-do-convite}`, o usuário vê a interface de confirmação.
-* **Interface de RSVP:** Deve exibir a imagem do convite (configurável pelo admin), a mensagem personalizada e a lista de pessoas daquele convite.
+* **Interface de RSVP:** Deve exibir a imagem do convite (configurável pelo admin), uma mensagem de saudação fixa baseada no nome da família/convidado e a lista de pessoas daquele convite.
+  * Mensagem fixa: "{Nome da família/pessoa}, temos um convite especial para você 💌"
 * O convidado deve poder marcar "Sim" ou "Não" para cada pessoa listada no convite.
 * Ao salvar, o status no banco de dados é atualizado automaticamente.
 * O mesmo convite pode ser acessado múltiplas vezes pelos convidados para possíveis atualizações de RSVP, passando pelo mesmo fluxo de responder e visualizar tela de presentes.
 
 **RF-04: Customização Visual do Convite**
 * O admin deve poder fornecer uma imagem de capa para o convite via **upload de arquivo** ou **colagem direta (Ctrl+V)** na área designada. O campo de URL de imagem não deve ser exposto ao usuário.
-* O admin deve poder escrever um texto personalizado que aparecerá na tela de RSVP.
-* Diferenciação: Deve haver uma configuração visual ou fluxo separado para "Padrinhos" (imagem e texto distintos dos convites comuns).
+* O admin deve poder escrever um texto personalizado destinado ao envio pelo WhatsApp. Esta mensagem NÃO aparece na tela de RSVP fixa.
+* Diferenciação: Deve haver uma configuração visual ou fluxo separado para "Padrinhos" (imagem distinta dos convites comuns). No cadastro, a label deve ser clara: "Convidado ou Padrinho".
 
 **RF-05: Envio (Manual)**
-* O sistema não envia mensagens automaticamente, mas deve fornecer um botão "Copiar Link" ou "Enviar via WhatsApp" que abre a API do WhatsApp (`wa.me`) com uma mensagem pré-definida contendo o link do convite para o número da primeira pessoa cadastrada naquele convite, se disponível.
+* O sistema não envia mensagens automaticamente, mas deve fornecer um botão "Copiar Link" ou "Enviar via WhatsApp". Se o admin preencher uma **Mensagem Personalizada**, ela será usada no corpo da mensagem do WhatsApp, seguida pelo link. Caso contrário, usa-se uma mensagem padrão com o link. O envio é feito para o número da primeira pessoa cadastrada naquele convite, se disponível.
 
 **RF-11: Auto-inclusão de Acompanhantes pelo Convidado**
 * Na interface de RSVP, o convidado deve ter a opção de adicionar novas pessoas (acompanhantes) ao seu convite.
@@ -53,7 +54,7 @@ O sistema operará em dois contextos distintos:
 ### 3.3. Módulo de Lista de Presentes
 **RF-07: Cadastro de Presentes**
 * O admin adiciona itens à lista de desejos.
-* **Campos:** Nome do Presente, Link de Compra (URL externa), **Categoria** (ex: "A", "B", "C").
+* **Campos:** Nome do Presente, Link de Compra (URL externa), **Categoria** (ex: "Barato", "Médio", "Caro").
 * *Imagem do Presente:* A imagem do presente deve ser inserida pelo admin através de um link.
 * O admin pode **desabilitar** um presente (ocultá-lo da lista pública) ou **excluí-lo permanentemente**. Ambas as ações devem estar disponíveis.
 * Cada presente possui um **status de disponibilidade**: `Livre` (disponível para escolha) ou `Escolhido` (reservado por um convidado).
@@ -63,9 +64,9 @@ O sistema operará em dois contextos distintos:
 **RF-08: Visualização e Interação pelo Convidado (Com Filtragem de Categoria)**
 * Após o convidado confirmar presença (Status = `Confirmado`) na tela de RSVP, o sistema deve exibir um botão ou seção "Ver Lista de Presentes".
 * Se o convidado acessar o link do convite novamente e já estiver confirmado, a lista deve estar visível imediatamente.
-* **Filtragem por Categoria:** O convidado só visualizará os presentes cuja **Categoria** esteja contida na lista de **Categorias do seu Convite**. Ex: Se o convite tem categorias ["A", "B"], o convidado vê presentes "A" e "B", mas não "C".
+* **Filtragem por Categoria:** O convidado só visualizará os presentes cuja **Categoria** esteja contida na lista de **Categorias do seu Convite**. Ex: Se o convite tem categorias ["Barato"], o convidado vê presentes "Barato", mas não "Caro".
 * Na lista de presentes, cada item exibe seu status: **Livre** ou **Escolhido**.
-* O convidado pode **marcar um presente como "Escolhido"**, sinalizando sua intenção de presentear com aquele item. Após marcado, o presente passa a aparecer como indisponível para os demais convidados e o sistema registra o vínculo com o convite (família) de origem.
+* O convidado pode clicar em **"Escolher esse Presente"**. O sistema deve solicitar uma **confirmação** via modal antes de marcar como escolhido. Após confirmado, o presente passa a aparecer como indisponível para os demais convidados e o sistema registra o vínculo com o convite (família) de origem.
 
 ### 3.4. Módulo Financeiro (Gestão de Fornecedores)
 **RF-09: Gestão de Prestadores de Serviço**
@@ -86,8 +87,8 @@ Para orientar a criação do banco de dados (SQL ou NoSQL), utilize as seguintes
 * `type`: Enum (`standard`, `godparent`)
 * `slug`: String (Índice Único - usado na URL)
 * `cover_image_url`: String (referência interna ao arquivo armazenado — não exposta como campo de texto ao usuário)
-* `message_body`: Texto
-* `categories`: Array<String> (ex: ["A", "B"])
+* `message_body`: Texto (Destinado ao WhatsApp)
+* `categories`: Array<String> (ex: ["Barato", "Médio"])
 * `created_at`: DateTime
 
 ### Tabela: `guests`
@@ -105,7 +106,7 @@ Para orientar a criação do banco de dados (SQL ou NoSQL), utilize as seguintes
 * `image_url`: String
 * `status`: Enum (`available`, `chosen`) — **substitui o campo `is_active` booleano**
 * `is_visible`: Booleano (controla se o presente aparece na lista pública; substitui o uso de `is_active` para visibilidade)
-* `category`: String (ex: "A")
+* `category`: String (ex: "Barato")
 * `chosen_by_invitation_id`: UUID (Chave Estrangeira -> invitations.id) — atribuição do presente escolhido ao convite.
 
 ### Tabela: `vendors`
@@ -138,7 +139,7 @@ Para orientar a criação do banco de dados (SQL ou NoSQL), utilize as seguintes
 
 ### Fluxo 2: Convidado Confirma Presença
 1.  Convidado clica no link recebido.
-2.  Visualiza "Capa" e "Mensagem".
+2.  Visualiza "Capa" e a saudação fixa: "{Família}, temos um convite especial para você 💌".
 3.  Visualiza lista com seu nome e familiares.
 4.  (Opcional) Caso falte algum acompanhante, o convidado utiliza a opção "Adicionar pessoa", preenche os dados e confirma a inclusão.
 5.  Alterna o status para "Vou" ou "Não vou" em cada nome.
@@ -148,8 +149,9 @@ Para orientar a criação do banco de dados (SQL ou NoSQL), utilize as seguintes
 ### Fluxo 3: Convidado Interage com Lista de Presentes
 1.  Convidado confirmado acessa a lista de presentes.
 2.  Visualiza itens com status **Livre** ou **Escolhido**.
-3.  Clica em um presente com status **Livre**.
-4.  Sistema atualiza o status do presente para **Escolhido**.
+3.  Clica em "Escolher esse Presente" em um item com status **Livre**.
+4.  **Confirmar escolha** no modal de confirmação.
+5.  Sistema atualiza o status do presente para **Escolhido**.
 5.  O presente passa a aparecer como indisponível para os demais convidados.
 
 ### Fluxo 4: Admin Cadastra Presente

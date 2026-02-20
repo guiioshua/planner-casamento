@@ -53,7 +53,7 @@ Baseado na implementação atual do backend (Controllers & DTOs do Spring Boot).
   "type": "STANDARD",        // Enum: STANDARD, GODPARENT
   "messageBody": "Venha celebrar conosco!",
   "coverImageUrl": "http://...", // Opcional: A lógica prefere o arquivo enviado, se presente
-  "categories": ["A", "B"], // Lista de categorias às quais este convite pertence
+  "categories": ["Barato", "Médio"], // Lista de categorias às quais este convite pertence
   "guests": [
     {
       "fullName": "João Souza",
@@ -75,7 +75,7 @@ Baseado na implementação atual do backend (Controllers & DTOs do Spring Boot).
   "coverImageUrl": "http://localhost:8081/uploads/...",
   "messageBody": "...",
   "createdAt": "2024-01-01T10:00:00Z",
-  "categories": ["A", "B"],
+  "categories": ["Barato", "Médio"],
   "guests": [
     {
       "id": "uuid",
@@ -166,7 +166,7 @@ Baseado na implementação atual do backend (Controllers & DTOs do Spring Boot).
   "purchaseLink": "https://amazon...",
   "imageUrl": "https://...",
   "visible": true,       // Opcional (padrão true)
-  "category": "A",       // Categoria para filtragem (corresponde às categorias do convite)
+  "category": "Barato",       // Categoria para filtragem (corresponde às categorias do convite)
   "status": "AVAILABLE"  // Opcional (padrão AVAILABLE, Enum: AVAILABLE, CHOSEN)
 }
 ```
@@ -187,7 +187,7 @@ Baseado na implementação atual do backend (Controllers & DTOs do Spring Boot).
   "imageUrl": "...",
   "status": "AVAILABLE",
   "visible": true,
-  "category": "A",
+  "category": "Barato",
   "chosenByFamilyName": "Família Souza" // Nulo quando o status é AVAILABLE
 }
 ```
