@@ -30,7 +30,7 @@ frontend/yarn-error.log*
 frontend/pnpm-debug.log*
 
 # Imagens dos convites
-/uploads
+uploads/
 
 # Docker
 **/.env
