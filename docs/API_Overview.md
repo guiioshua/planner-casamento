@@ -53,6 +53,7 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "type": "STANDARD",        // Enum: STANDARD, GODPARENT
   "messageBody": "Venha celebrar conosco!",
   "coverImageUrl": "http://..." // Optional: Logic prefers uploaded file if present
+  "categories": ["A", "B"], // List of categories this invitation belongs to
   "guests": [
     {
       "fullName": "João Souza",
@@ -74,6 +75,7 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "coverImageUrl": "http://localhost:8081/uploads/...",
   "messageBody": "...",
   "createdAt": "2024-01-01T10:00:00Z",
+  "categories": ["A", "B"],
   "guests": [
     {
       "id": "uuid",
@@ -164,6 +166,7 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "purchaseLink": "https://amazon...",
   "imageUrl": "https://...",
   "visible": true,       // Optional (defaults to true)
+  "category": "A",       // Category for filtering (matches invitation categories)
   "status": "AVAILABLE"  // Optional (defaults to AVAILABLE, Enum: AVAILABLE, CHOSEN)
 }
 ```
@@ -184,6 +187,7 @@ Based on the current backend implementation (Spring Boot Controllers & DTOs).
   "imageUrl": "...",
   "status": "AVAILABLE",
   "visible": true,
+  "category": "A",
   "chosenByFamilyName": "Família Souza" // Null when status is AVAILABLE
 }
 ```

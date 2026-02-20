@@ -87,6 +87,7 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 * `slug`: String (Unique Index - usado na URL)
 * `cover_image_url`: String (referência interna ao arquivo armazenado — não exposta como campo de texto ao usuário)
 * `message_body`: Text
+* `categories`: Array<String> (ex: ["A", "B"])
 * `created_at`: DateTime
 
 ### Tabela: `guests`
@@ -104,6 +105,7 @@ Para orientar a I.A. na criação do banco de dados (SQL ou NoSQL), utilize as s
 * `image_url`: String
 * `status`: Enum (`available`, `chosen`) — **substitui o campo `is_active` booleano**
 * `is_visible`: Boolean (controla se o presente aparece na lista pública; substitui o uso de `is_active` para visibilidade)
+* `category`: String (ex: "A")
 * `chosen_by_invitation_id`: UUID (Foreign Key -> invitations.id) — atribuição do presente escolhido ao convite.
 
 ### Tabela: `vendors`
