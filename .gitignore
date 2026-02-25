@@ -20,14 +20,14 @@ backend/mvnw
 backend/mvnw.cmd
 
 # Node / frontend
-frontend/node_modules/
-frontend/dist/
-frontend/dist-ssr/
-frontend/.vite/
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-frontend/pnpm-debug.log*
+planner-frontend/node_modules/
+planner-frontend/dist/
+planner-frontend/dist-ssr/
+planner-frontend/.vite/
+planner-frontend/npm-debug.log*
+planner-frontend/yarn-debug.log*
+planner-frontend/yarn-error.log*
+planner-frontend/pnpm-debug.log*
 
 # Imagens dos convites
 uploads/
