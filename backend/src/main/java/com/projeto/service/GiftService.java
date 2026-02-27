@@ -93,10 +93,9 @@ public class GiftService {
 
     @Transactional
     public void delete(UUID id) {
-        if (!giftRepository.existsById(id)) {
-            throw new EntityNotFoundException("Gift not found: " + id);
-        }
-        giftRepository.deleteById(id);
+        Gift gift = giftRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Gift not found: " + id));
+        giftRepository.delete(gift);
     }
 
     private GiftResponse toResponse(Gift gift) {

@@ -56,10 +56,9 @@ public class VendorService {
 
     @Transactional
     public void delete(UUID id) {
-        if (!vendorRepository.existsById(id)) {
-            throw new EntityNotFoundException("Vendor not found: " + id);
-        }
-        vendorRepository.deleteById(id);
+        Vendor vendor = vendorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Vendor not found: " + id));
+        vendorRepository.delete(vendor);
     }
 
     private VendorResponse toResponse(Vendor vendor) {
@@ -75,4 +74,3 @@ public class VendorService {
                 .build();
     }
 }
-

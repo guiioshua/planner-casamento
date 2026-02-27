@@ -3,7 +3,6 @@ package com.projeto.controller;
 import com.projeto.dto.CreateInvitationRequest;
 import com.projeto.dto.InvitationResponse;
 import com.projeto.service.InvitationService;
-import com.projeto.service.StorageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,6 @@ import java.util.UUID;
 public class InvitationController {
 
     private final InvitationService invitationService;
-    private final StorageService storageService;
 
     @GetMapping
     public List<InvitationResponse> listAll() {
@@ -32,13 +30,7 @@ public class InvitationController {
     public InvitationResponse create(
             @Valid @RequestPart("data") CreateInvitationRequest request,
             @RequestPart(value = "coverImage", required = false) MultipartFile coverImage) {
-
-        String imageUrl = null;
-        if (coverImage != null && !coverImage.isEmpty()) {
-            imageUrl = storageService.store(coverImage);
-        }
-
-        return invitationService.createInvitation(request, imageUrl);
+        return invitationService.createInvitation(request, coverImage);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -46,13 +38,7 @@ public class InvitationController {
             @PathVariable("id") UUID id,
             @Valid @RequestPart("data") CreateInvitationRequest request,
             @RequestPart(value = "coverImage", required = false) MultipartFile coverImage) {
-
-        String imageUrl = null;
-        if (coverImage != null && !coverImage.isEmpty()) {
-            imageUrl = storageService.store(coverImage);
-        }
-
-        return invitationService.updateInvitation(id, request, imageUrl);
+        return invitationService.updateInvitation(id, request, coverImage);
     }
 
     @DeleteMapping("/{id}")

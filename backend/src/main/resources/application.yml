@@ -39,3 +39,6 @@ logging:
     root: INFO
     org.springframework.web: INFO
     org.hibernate.SQL: DEBUG
+
+cors:
+  allowed-origins: http://localhost:8080,http://localhost:5173,http://localhost:3000

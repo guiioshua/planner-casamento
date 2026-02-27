@@ -33,5 +33,5 @@ public class Guest {
     private GuestStatus status;
 
     @Column(name = "is_child", nullable = false)
-    private boolean isChild;
+    private boolean child;
 }

@@ -32,13 +32,11 @@ public class GiftController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GiftResponse create(@Valid @RequestBody GiftRequest request) {
-        System.out.println("GiftController.create received: " + request);
         return giftService.create(request);
     }
 
     @PutMapping("/{id}")
     public GiftResponse update(@PathVariable("id") UUID id, @Valid @RequestBody GiftRequest request) {
-        System.out.println("GiftController.update received for " + id + ": " + request);
         return giftService.update(id, request);
     }
 

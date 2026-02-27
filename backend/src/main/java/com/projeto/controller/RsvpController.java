@@ -1,5 +1,6 @@
 package com.projeto.controller;
 
+import com.projeto.dto.CreateGuestRequest;
 import com.projeto.dto.InvitationResponse;
 import com.projeto.dto.RsvpUpdateRequest;
 import com.projeto.service.InvitationService;
@@ -14,6 +15,8 @@ public class RsvpController {
 
     private final InvitationService invitationService;
 
+    // Public-facing slug lookup used by the RSVP page (mirrors
+    // /invitations/slug/{slug} for admin)
     @GetMapping("/{slug}")
     public InvitationResponse getInvitationForRsvp(@PathVariable("slug") String slug) {
         return invitationService.getBySlug(slug);
@@ -27,7 +30,7 @@ public class RsvpController {
 
     @PostMapping("/{slug}/guests")
     public InvitationResponse addGuest(@PathVariable("slug") String slug,
-            @Valid @RequestBody com.projeto.dto.CreateGuestRequest request) {
+            @Valid @RequestBody CreateGuestRequest request) {
         return invitationService.addGuestToInvitation(slug, request);
     }
 }

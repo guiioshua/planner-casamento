@@ -52,18 +52,30 @@ public class Invitation {
 
     @PrePersist
     private void prePersist() {
-        if (this.id == null) {
+        assignIdIfAbsent();
+        assignSlugIfAbsent();
+        assignCreatedAtIfAbsent();
+        applyDefaults();
+    }
+
+    private void assignIdIfAbsent() {
+        if (this.id == null)
             this.id = UUID.randomUUID();
-        }
-        if (this.slug == null || this.slug.isBlank()) {
+    }
+
+    private void assignSlugIfAbsent() {
+        if (this.slug == null || this.slug.isBlank())
             this.slug = UUID.randomUUID().toString();
-        }
-        if (this.createdAt == null) {
+    }
+
+    private void assignCreatedAtIfAbsent() {
+        if (this.createdAt == null)
             this.createdAt = OffsetDateTime.now();
-        }
-        if (this.type == null) {
+    }
+
+    private void applyDefaults() {
+        if (this.type == null)
             this.type = InvitationType.STANDARD;
-        }
         if (this.categories == null || this.categories.isEmpty()) {
             this.categories = new ArrayList<>();
             this.categories.add("A");
@@ -77,7 +89,7 @@ public class Invitation {
                 .fullName(fullName)
                 .phone(phone)
                 .status(status != null ? status : GuestStatus.PENDING)
-                .isChild(isChild)
+                .child(isChild)
                 .build();
         this.guests.add(guest);
         return guest;

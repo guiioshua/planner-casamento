@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class InvitationService {
 
     private final InvitationRepository invitationRepository;
+    private final StorageService storageService;
 
     @Transactional(readOnly = true)
     public List<InvitationResponse> findAll() {
@@ -31,11 +33,8 @@ public class InvitationService {
     }
 
     @Transactional
-    public InvitationResponse createInvitation(CreateInvitationRequest request, String uploadedImageUrl) {
-        String finalImageUrl = uploadedImageUrl;
-        if (finalImageUrl == null && request.getCoverImageUrl() != null) {
-            finalImageUrl = request.getCoverImageUrl();
-        }
+    public InvitationResponse createInvitation(CreateInvitationRequest request, MultipartFile coverImage) {
+        String finalImageUrl = resolveImageUrl(coverImage, request.getCoverImageUrl());
 
         Invitation invitation = Invitation.builder()
                 .familyName(request.getFamilyName())
@@ -47,20 +46,15 @@ public class InvitationService {
 
         if (request.getGuests() != null) {
             for (CreateGuestRequest guestRequest : request.getGuests()) {
-                GuestStatus status = null;
-                if (guestRequest.getStatus() != null) {
-                    try {
-                        status = GuestStatus.valueOf(guestRequest.getStatus().toUpperCase());
-                    } catch (IllegalArgumentException ignored) {
-                    }
-                }
-                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone(), status,
+                invitation.addGuest(
+                        guestRequest.getFullName(),
+                        guestRequest.getPhone(),
+                        parseStatus(guestRequest.getStatus()),
                         guestRequest.isChild());
             }
         }
 
-        Invitation saved = invitationRepository.save(invitation);
-        return toResponse(saved);
+        return toResponse(invitationRepository.save(invitation));
     }
 
     @Transactional(readOnly = true)
@@ -71,7 +65,7 @@ public class InvitationService {
     }
 
     @Transactional
-    public InvitationResponse updateInvitation(UUID id, CreateInvitationRequest request, String uploadedImageUrl) {
+    public InvitationResponse updateInvitation(UUID id, CreateInvitationRequest request, MultipartFile coverImage) {
         Invitation invitation = invitationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Invitation not found: " + id));
 
@@ -83,31 +77,24 @@ public class InvitationService {
             invitation.setCategories(request.getCategories());
         }
 
-        if (uploadedImageUrl != null) {
-            invitation.setCoverImageUrl(uploadedImageUrl);
-        } else if (request.getCoverImageUrl() != null && !request.getCoverImageUrl().isBlank()) {
-            invitation.setCoverImageUrl(request.getCoverImageUrl());
+        String resolvedUrl = resolveImageUrl(coverImage, request.getCoverImageUrl());
+        if (resolvedUrl != null) {
+            invitation.setCoverImageUrl(resolvedUrl);
         }
 
-        // We are REPLACING the guest list here in the update method.
-        // A more granular approach might be better, but sticking to existing logic.
+        // Replace the full guest list on update
         invitation.getGuests().clear();
         if (request.getGuests() != null) {
             for (CreateGuestRequest guestRequest : request.getGuests()) {
-                GuestStatus status = null;
-                if (guestRequest.getStatus() != null) {
-                    try {
-                        status = GuestStatus.valueOf(guestRequest.getStatus().toUpperCase());
-                    } catch (IllegalArgumentException ignored) {
-                    }
-                }
-                invitation.addGuest(guestRequest.getFullName(), guestRequest.getPhone(), status,
+                invitation.addGuest(
+                        guestRequest.getFullName(),
+                        guestRequest.getPhone(),
+                        parseStatus(guestRequest.getStatus()),
                         guestRequest.isChild());
             }
         }
 
-        Invitation saved = invitationRepository.save(invitation);
-        return toResponse(saved);
+        return toResponse(invitationRepository.save(invitation));
     }
 
     @Transactional
@@ -130,8 +117,54 @@ public class InvitationService {
             }
         }
 
-        Invitation saved = invitationRepository.save(invitation);
-        return toResponse(saved);
+        return toResponse(invitationRepository.save(invitation));
+    }
+
+    @Transactional
+    public InvitationResponse addGuestToInvitation(String slug, CreateGuestRequest request) {
+        Invitation invitation = invitationRepository.findBySlug(slug)
+                .orElseThrow(() -> new EntityNotFoundException("Invitation not found for slug: " + slug));
+
+        invitation.addGuest(
+                request.getFullName(),
+                request.getPhone(),
+                parseStatus(request.getStatus()),
+                request.isChild());
+
+        return toResponse(invitationRepository.save(invitation));
+    }
+
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Determines the final image URL to persist.
+     * An uploaded file takes precedence over a URL string provided in the request
+     * body.
+     */
+    private String resolveImageUrl(MultipartFile uploadedFile, String requestUrl) {
+        if (uploadedFile != null && !uploadedFile.isEmpty()) {
+            return storageService.store(uploadedFile);
+        }
+        if (requestUrl != null && !requestUrl.isBlank()) {
+            return requestUrl;
+        }
+        return null;
+    }
+
+    /**
+     * Parses a raw status string into a {@link GuestStatus}, defaulting to PENDING
+     * if the value is null or unrecognised.
+     */
+    private GuestStatus parseStatus(String raw) {
+        if (raw == null)
+            return GuestStatus.PENDING;
+        try {
+            return GuestStatus.valueOf(raw.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return GuestStatus.PENDING;
+        }
     }
 
     private InvitationResponse toResponse(Invitation invitation) {
@@ -160,24 +193,5 @@ public class InvitationService {
                 .status(guest.getStatus())
                 .isChild(guest.isChild())
                 .build();
-    }
-
-    @Transactional
-    public InvitationResponse addGuestToInvitation(String slug, CreateGuestRequest request) {
-        Invitation invitation = invitationRepository.findBySlug(slug)
-                .orElseThrow(() -> new EntityNotFoundException("Invitation not found for slug: " + slug));
-
-        GuestStatus status = GuestStatus.PENDING;
-        if (request.getStatus() != null) {
-            try {
-                status = GuestStatus.valueOf(request.getStatus().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // Keep default
-            }
-        }
-
-        invitation.addGuest(request.getFullName(), request.getPhone(), status, request.isChild());
-        Invitation saved = invitationRepository.save(invitation);
-        return toResponse(saved);
     }
 }
